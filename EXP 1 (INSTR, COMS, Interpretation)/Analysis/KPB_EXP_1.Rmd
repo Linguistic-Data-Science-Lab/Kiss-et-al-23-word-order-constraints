@@ -1,0 +1,253 @@
+---
+title: "Kiss, Pieper, Börner (2022): EXP 1"
+output: html_document
+date: "29.08.2022, 26.10.2022"
+author: "Tibor Kiss"
+---
+
+### Analysis of experimental study on affirmative and privative interpretations
+
+This document provides the analysis for the experimental study on affirmative and privative interpretations used in Kiss, Pieper, Börner (2022) (EXP 1), revised version after reviews, including the random slopes on the interaction of main effects.
+
+The analysis differs from earlier versions in that we now use affirmative interpretations as reference values. Also, the experiments make now use of the term _Interpretation_ to distinguish affirmative from privative interpretations of event-internal modifiers. Earlier version used _Thematic Integration_ instead.
+
+#### Read in required libraries
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(lme4)
+library(tidyverse)
+library(emmeans)
+library(kableExtra)
+
+show(version)
+```
+
+#### Summary of test items for EXP 1
+
+The following table contains the minimal pairs of test items used in EXP 1. Minimal pairs `t1` - `t12` contain subject-oriented `comitatives`,  minimal pairs `t13` - `t24` contain `instrumentals`. Further information on the test item pairs is provided in the file `Data/stimuli_test_further_annotation.csv`.   
+
+```{r read in test items for presentation, echo = FALSE}
+test_items <- 
+  read.csv("../Data/stimuli_test_basic.csv", fileEncoding = "UTF-8", stringsAsFactors = TRUE) %>%
+  select(ENCODING, OPTION_0_ITEM, OPTION_1_ITEM)
+
+colnames(test_items) <- c("Test Item Pair", "PP > OBJ", "OBJ > PP")
+
+kbl(test_items) %>% kable_styling()
+
+```
+
+#### Read in data set
+
+We'll use more perspicuous names to address `subjects` and `items`.
+
+```{r data set}
+
+data <-
+  read.csv("../Data/ForcedChoice_test.csv", fileEncoding = "UTF-8") %>%
+  mutate(ANSWER = factor(ANSWER),
+         INTERPRETATION = ifelse(INTEGRATION == "yes", "affirmative", "privative"),
+         INTERPRETATION = factor(INTERPRETATION),
+         ADVERBIAL_TYPE = factor(ADVERBIAL_TYPE),
+         subjects = factor(workerId),
+         items = factor(ENCODING))
+
+
+summary(data)
+```
+
+
+#### Empirical distribution of choices
+
+
+```{r empirical distribution, warning = FALSE, message = FALSE, fig.width = 8}
+
+int.labels <- c("Privative Interpretation", "Affirmative Interpretation")
+names(int.labels) <- c("privative", "affirmative")
+
+summary <- 
+  data %>%
+  group_by(ADVERBIAL_TYPE, INTERPRETATION, ANSWER) %>%
+  summarise(count = n()) %>%
+  as.data.frame()
+
+summary$INTERPRETATION <- relevel(summary$INTERPRETATION, ref = "privative")
+
+ggplot(summary, aes(x = ADVERBIAL_TYPE, y = count, fill = ANSWER)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Adverbial Type", y = "Frequency of Choice") + 
+  facet_wrap(~INTERPRETATION, labeller = labeller(INTERPRETATION = int.labels)) +
+  scale_fill_manual(name = "Choice", values = c("grey40", "grey80"),
+                    labels = c("OBJ > PP", "PP > OBJ")) +
+  theme_bw()
+
+summary.wide <-
+  summary %>%
+  spread(key = ANSWER, value = count)
+
+summary.wide
+
+```
+
+The graphical representation of the empirical distribution of choices suggests an interaction between the main effects, as is witnessed by the inversion of the distribution of `COM(S)` under `affirmative interpretation`. 
+
+#### Random Slope Model with interaction
+
+Please notice that the random structure does not assume intercepts, because we want to obtain information on by-subject variance (i.e. workerId) for each condition.
+
+```{r random slope model}
+
+data$INTERPRETATION <-
+  relevel(data$INTERPRETATION, ref = "affirmative")
+data$ADVERBIAL_TYPE <-
+  relevel(data$ADVERBIAL_TYPE, ref = "INSTR")
+
+
+model1 <- 
+  glmer(formula = ANSWER ~ ADVERBIAL_TYPE * INTERPRETATION + 
+          (0 + ADVERBIAL_TYPE * INTERPRETATION | subjects) , 
+        data = data, family = binomial())
+
+options(width = 300)
+summary(model1)
+```
+
+We'll have to consider possible spurious convergence warnings, and apply tests from https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html, i.e. Ben Bolker's troubleshooting page for spurious convergence errors.
+
+```{r singularity}
+
+tt <- getME(model1,"theta")
+ll <- getME(model1,"lower")
+```
+
+The comparatively high value of `r round(min(tt[ll==0]), 3)` suggests that singularity is not an issue here. 
+Restarting solves the problem here. 
+
+```{r restarting}
+ss <- 
+  getME(model1, c("theta", "fixef"))
+model2 <- 
+  update(model1,
+         start=ss,
+         control=glmerControl(optCtrl=list(maxfun=2e4)))
+
+options(width = 300)
+summary(model2)
+
+```
+
+
+### Model predictions
+
+
+```{r Model predictions, fig.width = 8}
+
+
+predictions <- 
+  emmeans(model2, pairwise~ADVERBIAL_TYPE * INTERPRETATION, 
+          type = "response") 
+
+## also response useful, now switched to predictor for effects
+## if lp is used, y = emmean, if response is used y = prob
+
+predictions.emm <- data.frame(predictions$emmeans)
+ 
+
+predictions.emm
+
+ggplot(predictions.emm, aes(x = ADVERBIAL_TYPE, y = prob)) + 
+  geom_bar(aes(), stat = "identity", fill = "grey", width = 0.3) +
+  facet_wrap(~INTERPRETATION, labeller = labeller(INTERPRETATION = int.labels)) +
+  labs(x = "Adverbial Types", y = "Pr(PP>OBJ)")
+```
+
+
+### Plotting correlations for random effects
+
+In the following, we plot correlations between the conditions, based on random effects. 
+
+```{r plots for random structure (participants)}
+
+ranef.df <- data.frame(ranef(model2)$subjects)
+ranef.df$participants <- rownames(ranef.df)
+colnames(ranef.df)[1:4] <- c("INSTR_aff", "COMS_aff", "INSTR_priv", "COMS_priv")
+
+ranef.df <- ranef.df %>%
+#  mutate(INSTR_aff = INSTR_aff + model2@beta[1]) %>%
+#  mutate(COMS_aff = COMS_aff + model2@beta[2]) %>%
+#  mutate(INSTR_priv = INSTR_priv + model2@beta[3]) %>%
+#  mutate(COMS_priv = COMS_priv + model2@beta[4]) %>%
+  arrange(COMS_aff)
+
+
+```
+
+We make use of `VarCorr(model2)` to extract the correlation parameters from the model (which are correlations of standard deviations). 
+
+```{r correlations affirmative interpretations}
+cor_vals <- data.frame(VarCorr(model2)) 
+
+ggplot(ranef.df, aes(y = INSTR_aff, x = COMS_aff)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(y = "PP > OBJ given INSTR", 
+       x = "PP > OBJ given COM(S)", 
+       subtitle = "Correlation of random slopes for ADVERBIAL_TYPE in affirmative interpretations",
+       caption = paste("Correlation is ", round(cor_vals$sdcor[5], 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+  
+
+```
+
+The positive correlation between affirmative instrumental and comitative interpretations becomes clearly visible here. We see, however, that the individual random slopes for instrumental readings remain in the negative area, while all random slopes for comitatives are in the positive area. Hence, we may assume that speakers who tend to be less restrictive towards the serialization `INSTR > OBJ` are also more favorite towards the serialization `COM(S) > OBJ`. 
+
+```{r correlation privative interpretations}
+
+ggplot(ranef.df, aes(y = INSTR_priv, x = COMS_priv)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(y = "PP > OBJ given INSTR", 
+       x = "PP > OBJ given COM(S)", 
+       subtitle = "Correlation of random slopes for ADVERBIAL_TYPE in privative interpretations",
+       caption = paste("Correlation is ", round(cor_vals$sdcor[10], 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+
+```
+
+Here, we observe a strong negative correlation, which also leads to a (largely unexplained) reversal of preferences in case of privative instrumentals: speakers are most restrictive towards the order `PP > OBJ` for `COM(S)` prefer the same order for privative `INSTR`.   
+
+
+```{r correlation affirmative vs. privative for COM(S)}
+ggplot(ranef.df, aes(x = COMS_aff, y = COMS_priv)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(x = "PP > OBJ affirmative", 
+       y = "PP > OBJ privative", 
+       subtitle = "Correlation of random slopes for COM(S) in both interpretations",
+       caption = paste("Correlation is ", round(cor_vals$sdcor[9], 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+
+
+```
+
+The model already indicates that the subject-specific variance is much smaller for privative interpretations of COM(S) than for affirmative interpretations, which can be further witnessed from the visualization. 
+
+```{r correlation affirmative vs. privative for INSTR}
+ggplot(ranef.df, aes(x = INSTR_aff, y = INSTR_priv)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(x = "PP > OBJ affirmative", 
+       y = "PP > OBJ privative", 
+       subtitle = "(No) Correlation of random slopes for INSTR in both interpretations",
+       caption = paste("Correlation is ", round(cor_vals$sdcor[6], 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+
+```
+
+Apparently no correlation here. 
+
+

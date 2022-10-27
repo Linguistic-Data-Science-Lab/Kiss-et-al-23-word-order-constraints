@@ -1,0 +1,180 @@
+---
+title: "EXP 2 (Kiss, Pieper, Börner 2022)"
+output: html_document
+date: "16.10.2022"
+---
+
+### Analysis of experimental study on object-oriented and subject-oriented modifiers
+
+This document provides the analysis for the experimental study object-oriented and subject-oriented event-internal modifiers with alternating wh-indefinites and full indefinite NPs used in Kiss, Pieper, Börner (2022) (EXP 2).
+
+#### Read in required libraries
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(lme4)
+library(tidyverse)
+library(emmeans)
+library(kableExtra)
+library(brms)
+
+show(version)
+```
+
+
+#### Summary of test items for EXP 2
+
+The following table contains the minimal pairs of test items used in EXP 2. The test items were identical except for the difference between the _wh-_indefinite and the full NP. Hence, the test items in EXP 2 have been split up on two lists (the recall of which showed an unequal distribution, see below).   
+
+```{r read in test items for presentation, echo = FALSE}
+
+test_items <- 
+  read.csv2("../Data/EXP_2_Test_Items.csv", fileEncoding = "UTF-8", stringsAsFactors = TRUE)
+
+test_items <- test_items %>%
+  select(encoding, adverbial_type, orientation, condition.1, condition.2, condition.3, condition.4)
+
+test_items_list_1 <- test_items[, c(1, 2, 4, 5)]
+test_items_list_2 <- test_items[, c(1, 2, 6, 7)]
+
+kbl(test_items_list_1, col.names = c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP"),
+    caption = text_spec("wh indefinites", bold = TRUE, color = "black", font_size = 16)) %>% kable_styling()
+kbl(test_items_list_2, col.names = c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP"),
+    caption = "NP indefinites") %>% kable_styling()
+
+```
+
+
+### Read in data
+
+
+```{r read-in data}
+data <- read.csv("../Data/ForcedChoice_test.csv", stringsAsFactors = TRUE) %>% 
+  mutate(w_indef = factor(ifelse(str_detect(itemId, "_1_2"), "yes", "no")),
+         answer = factor(ifelse(ANSWER_CONDITION %in% c("condition 1", "condition 3"), "PP>OBJ", "OBJ>PP")),
+         ADVERBIAL_TYPE = relevel(factor(ADVERBIAL_TYPE), ref = "INSTR"),
+         subjects = factor(workerId),
+         itemId_nolist = str_extract(itemId, "t\\d{2}"), 
+         items = factor(itemId_nolist)) %>%
+  select(-c(ANSWER_CONDITION_NO, CLICK_COUNT_OPTION_0, CLICK_COUNT_OPTION_1, componentResultId, INT_ARG_TYPE, 
+            internal_node_id, ITEM_FUNCTION, ITEM_GROUP, OPTION_0_CONDITION, OPTION_0_KEY_CONDITION, 
+            OPTION_1_CONDITION, PHENOMENON, studyCode, studyId, studyTitle, studyResultId, ADVERBIAL_CLASS, 
+            ANIMACY_INT_ARG, ANIMACY_OBJ, ANIMACY_SUBJ, ANSWER, ANSWER_HISTORY,
+            batchId, batchTitle, component_repetition_count, componentId, componentPos, componentTitle,
+            groupResultId, ITEM_SUBGROUP, OPTION_1_KEY_CONDITION, PRESENTATION_ORDER, responses,
+            responses_extended, responses_info))
+
+summary(data)
+
+```
+
+#### Determining distribution of lists
+
+Following the guide lines developed in Pieper et al. (2022), participants are assessed with respect to reaction times and answers towards control items, which may lead to an exclusion of participants. In EXP 2, this led to an uneven distribution of the lists. This does not affect the modelling of the data. 
+
+```{r distribution of lists, echo = FALSE, message = FALSE}
+
+item.sum <- 
+  data %>%
+  separate(itemId, c("item", "obj_type"), sep = 3) %>%
+  mutate(obj_type = ifelse(obj_type == "_1_2", "WH", "NP")) %>%
+  group_by(item, obj_type) %>%
+  summarize(subjects = n()) %>%
+  spread(key = obj_type, value = subjects) %>%
+  as.data.frame()
+
+list.sum <- 
+  data %>%
+  group_by(LIST) %>%
+  summarize(count = n()/24) %>%
+  as.data.frame()
+
+```
+
+```{r}
+list.sum
+
+```
+
+#### Empirical distribution of choices
+
+The empirical distribution of choices already indicates that an influence of the form of the NP (WH/NP) cannot be found.
+
+```{r empirical distribution, warning = FALSE, message = FALSE, fig.width = 8}
+
+ADV.labels <- c("Comitative (obj.)", "Instrumental")
+names(ADV.labels) <- c("COM(O)", "INSTR")
+
+summary <- 
+  data %>%
+  group_by(ADVERBIAL_TYPE, w_indef, answer) %>%
+  summarise(count = n()) %>%
+  as.data.frame()
+
+ggplot(summary, aes(x = answer, y = count, fill = w_indef)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Choice", y = "Frequency of Choice") +
+  scale_fill_manual(name = "Form of OBJ", 
+                      labels = c("NP", "WH"), 
+                      values = c("grey80", "grey40")) +
+  facet_wrap(~ADVERBIAL_TYPE, labeller = labeller(ADVERBIAL_TYPE = ADV.labels)) +
+  theme_bw()
+
+```
+
+### Random slope model for full data set
+
+The model shows no influence of the form of the NP. 
+
+```{r model}
+model <- glmer(answer ~ w_indef + ADVERBIAL_TYPE + (0 + ADVERBIAL_TYPE|subjects) + (1|items), 
+               data = data, family = "binomial")
+
+summary(model)
+
+predictions <- 
+  emmeans(model, pairwise~ADVERBIAL_TYPE + w_indef, 
+          type = "response") 
+
+predictions.emm <- data.frame(predictions$emmeans)
+
+wh.labels <- c("wh indefinite", "Full NP")
+names(wh.labels) <- c("yes", "no")
+
+ggplot(predictions.emm, aes(x = w_indef, y = prob)) + 
+  geom_bar(aes(), stat = "identity", fill = "grey", width = 0.3) +
+  facet_wrap(~ADVERBIAL_TYPE, labeller = labeller(ADVERBIAL_TYPE = ADV.labels)) +
+  scale_x_discrete(labels = c("no" = "Full NP", "yes" = "wh indefinite")) +
+  labs(x = "Type of NP", y = "Pr(PP>OBJ)")
+
+
+```
+
+
+### Plotting correlations for random effects
+
+The following plot provides an illustration of the correlation between random effects for the two different adverbial types. 
+
+```{r plots for random structure (participants)}
+
+ranef.df <- data.frame(ranef(model)$subjects)
+ranef.df$participants <- rownames(ranef.df)
+
+colnames(ranef.df)[1:2] <- c("Instrumental", "Comitative")
+
+ranef.df <- ranef.df %>%
+  arrange(Comitative)
+
+cor_vals <- data.frame(VarCorr(model))
+
+ggplot(ranef.df, aes(y = Instrumental, x = Comitative)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(y = "PP > OBJ given INSTR", 
+       x = "PP > OBJ given COM(O)", 
+       subtitle = "Correlation of random slopes for ADVERBIAL_TYPEs",
+       caption = paste("Correlation is ", round(cor_vals$sdcor[3], 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+```
+
+The strong positive correlation between choices for `PP > OBJ` given `COM(O)` and `PP > OBJ` given `INSTR` merits further investigations. 
