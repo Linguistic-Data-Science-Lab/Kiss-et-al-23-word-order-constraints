@@ -1,4 +1,4 @@
-# Kiss_et_al_22_word_order_constraints_on_event_internal_modifiers
+# Kiss et al. (2022): Word order constraints on event-internal modifiers
 This repository contains the supplementary data of the experimental studies described in Kiss, Pieper, Börner (2022). [Revised version after initial submission.]
 
 # Word order constraints on event-internal modifiers
