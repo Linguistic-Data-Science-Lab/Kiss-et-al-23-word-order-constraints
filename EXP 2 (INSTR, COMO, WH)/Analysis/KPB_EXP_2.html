@@ -1665,6 +1665,84 @@ ggplot(ranef.df, aes(y = Instrumental, x = Comitative)) +
 <code>PP &gt; OBJ</code> given <code>COM(O)</code> and
 <code>PP &gt; OBJ</code> given <code>INSTR</code> merits further
 investigations.</p>
+<pre class="r"><code>mcmc_controls &lt;- list(adapt_delta = 0.9,
+                      max_treedepth = 13)
+
+options(mc.cores=parallel::detectCores())
+
+weak_priors &lt;- c(
+  prior(normal(0, 2), class = &quot;Intercept&quot;),
+  prior(normal(0, 2), class = &quot;b&quot;, coef = w_indefyes),
+  prior(normal(0, 2), class = &quot;b&quot;, coef = ADVERBIAL_TYPECOMO))
+
+bayes_model &lt;- brm(answer ~ w_indef + ADVERBIAL_TYPE + (0 + ADVERBIAL_TYPE|subjects) + (1|items), 
+               data = data, 
+               family = bernoulli(link = &quot;logit&quot;),
+               prior = weak_priors,
+               chains = 4,
+               warmup = 1000,
+               iter = 4000)</code></pre>
+<pre><code>## Compiling Stan program...</code></pre>
+<pre><code>## Start sampling</code></pre>
+<pre class="r"><code>summary(bayes_model)</code></pre>
+<pre><code>##  Family: bernoulli 
+##   Links: mu = logit 
+## Formula: answer ~ w_indef + ADVERBIAL_TYPE + (0 + ADVERBIAL_TYPE | subjects) + (1 | items) 
+##    Data: data (Number of observations: 936) 
+##   Draws: 4 chains, each with iter = 4000; warmup = 1000; thin = 1;
+##          total post-warmup draws = 12000
+## 
+## Group-Level Effects: 
+## ~items (Number of levels: 24) 
+##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(Intercept)     0.61      0.15     0.36     0.95 1.00     4550     7210
+## 
+## ~subjects (Number of levels: 39) 
+##                                             Estimate Est.Error l-95% CI
+## sd(ADVERBIAL_TYPEINSTR)                         0.91      0.18     0.58
+## sd(ADVERBIAL_TYPECOMO)                          1.08      0.23     0.68
+## cor(ADVERBIAL_TYPEINSTR,ADVERBIAL_TYPECOMO)     0.75      0.17     0.36
+##                                             u-95% CI Rhat Bulk_ESS Tail_ESS
+## sd(ADVERBIAL_TYPEINSTR)                         1.30 1.00     5057     7600
+## sd(ADVERBIAL_TYPECOMO)                          1.59 1.00     5521     7914
+## cor(ADVERBIAL_TYPEINSTR,ADVERBIAL_TYPECOMO)     0.98 1.00     2928     3952
+## 
+## Population-Level Effects: 
+##                    Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+## Intercept             -0.67      0.27    -1.21    -0.14 1.00     4806     6993
+## w_indefyes            -0.06      0.17    -0.39     0.26 1.00    16224     9458
+## ADVERBIAL_TYPECOMO    -1.00      0.33    -1.68    -0.35 1.00     5011     7389
+## 
+## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+## and Tail_ESS are effective sample size measures, and Rhat is the potential
+## scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre class="r"><code>prior_summary(bayes_model)</code></pre>
+<pre><code>##                 prior     class                coef    group resp dpar nlpar lb
+##                (flat)         b                                                
+##          normal(0, 2)         b  ADVERBIAL_TYPECOMO                            
+##          normal(0, 2)         b          w_indefyes                            
+##          normal(0, 2) Intercept                                                
+##  lkj_corr_cholesky(1)         L                                                
+##  lkj_corr_cholesky(1)         L                     subjects                   
+##  student_t(3, 0, 2.5)        sd                                               0
+##  student_t(3, 0, 2.5)        sd                        items                  0
+##  student_t(3, 0, 2.5)        sd           Intercept    items                  0
+##  student_t(3, 0, 2.5)        sd                     subjects                  0
+##  student_t(3, 0, 2.5)        sd  ADVERBIAL_TYPECOMO subjects                  0
+##  student_t(3, 0, 2.5)        sd ADVERBIAL_TYPEINSTR subjects                  0
+##  ub       source
+##          default
+##             user
+##             user
+##             user
+##          default
+##     (vectorized)
+##          default
+##     (vectorized)
+##     (vectorized)
+##     (vectorized)
+##     (vectorized)
+##     (vectorized)</code></pre>
 </div>
 
 
