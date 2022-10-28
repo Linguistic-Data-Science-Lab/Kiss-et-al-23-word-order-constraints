@@ -173,10 +173,10 @@ ranef.df$participants <- rownames(ranef.df)
 colnames(ranef.df)[1:4] <- c("INSTR_aff", "COMS_aff", "INSTR_priv", "COMS_priv")
 
 ranef.df <- ranef.df %>%
-#  mutate(INSTR_aff = INSTR_aff + model2@beta[1]) %>%
-#  mutate(COMS_aff = COMS_aff + model2@beta[2]) %>%
-#  mutate(INSTR_priv = INSTR_priv + model2@beta[3]) %>%
-#  mutate(COMS_priv = COMS_priv + model2@beta[4]) %>%
+  mutate(INSTR_aff = INSTR_aff + model2@beta[1]) %>%
+  mutate(COMS_aff = COMS_aff + model2@beta[2]) %>%
+  mutate(INSTR_priv = INSTR_priv + model2@beta[3]) %>%
+  mutate(COMS_priv = COMS_priv + model2@beta[4]) %>%
   arrange(COMS_aff)
 
 
@@ -200,7 +200,7 @@ ggplot(ranef.df, aes(y = INSTR_aff, x = COMS_aff)) +
 
 ```
 
-The positive correlation between affirmative instrumental and comitative interpretations becomes clearly visible here. We see, however, that the individual random slopes for instrumental readings remain in the negative area, while all random slopes for comitatives are in the positive area. Hence, we may assume that speakers who tend to be less restrictive towards the serialization `INSTR > OBJ` are also more favorite towards the serialization `COM(S) > OBJ`. 
+The positive correlation between affirmative instrumental and comitative interpretations becomes clearly visible here. Speakers which are more restrictive towards `INSTR > OBJ` are also somewhat restrictive towards `COM(S) > OBJ`. One could assume the influence of the categorial constraint `NP > PP` here. (But this appears to be contradicted by the negative correlation for **privative** interpretations of `INSTR` and `COM(S)`.)
 
 ```{r correlation privative interpretations}
 
@@ -249,5 +249,4 @@ ggplot(ranef.df, aes(x = INSTR_aff, y = INSTR_priv)) +
 ```
 
 Apparently no correlation here. 
-
 
