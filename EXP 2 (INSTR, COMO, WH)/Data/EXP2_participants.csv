@@ -1,0 +1,40 @@
+workerId;AGE;GENDER;EDUCATION;EDUCATION_PROFESSIONAL;MISC_ABROAD;MISC_MULTILINGUAL;MISC_NO_SPEC;MISC_NON_NAIVE;MISC_NONE;DEVICE;Country.of.Birth;Current.Country.of.Residence;Nationality
+191;23;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;touchpad;Germany;Germany;Germany
+194;37;male;(specialized) university-level graduation;bachelor;TRUE;FALSE;FALSE;FALSE;FALSE;touchpad;Germany;Netherlands;Germany
+196;30;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;TRUE;FALSE;mouse;Germany;Germany;Germany
+197;25;female;(specialized) university-level graduation;in training;FALSE;FALSE;TRUE;FALSE;FALSE;mouse;Germany;Germany;Germany
+198;25;male;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+200;25;female;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+201;21;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+207;23;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+208;22;male;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Austria;Germany
+209;25;female;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+213;24;female;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;TRUE;FALSE;touchpad;Germany;Germany;Germany
+214;35;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+219;22;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;touchscreen;Germany;Germany;Germany
+220;19;male;(specialized) university-level graduation;none;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+222;21;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+223;29;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+224;29;male;(specialized) university-level graduation;apprenticeship (dual);FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+225;27;male;(specialized) university-level graduation;apprenticeship (dual);FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+226;26;female;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+228;24;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;touchpad;Germany;Germany;Germany
+229;21;male;secondary school graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;touchscreen;Germany;Germany;Germany
+231;27;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+232;25;female;(specialized) university-level graduation;master;FALSE;FALSE;FALSE;TRUE;FALSE;touchpad;Austria;Austria;Austria
+233;20;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;touchscreen;Germany;Germany;Germany
+234;19;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+236;23;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+237;18;female;secondary school graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;mouse;Germany;Germany;Germany
+238;25;male;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+239;23;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;touchscreen;Germany;Germany;Germany
+240;22;male;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+241;25;female;(specialized) university-level graduation;master;TRUE;FALSE;FALSE;FALSE;FALSE;touchpad;Germany;United Kingdom;Germany
+244;19;male;secondary school graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;mouse;Austria;Austria;Austria
+245;37;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;TRUE;FALSE;keyboard;Germany;Germany;Germany
+246;34;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+248;24;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Germany;Germany;Germany
+249;20;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany
+250;35;male;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;mouse;Austria;Austria;Austria
+251;21;female;(specialized) university-level graduation;in training;FALSE;FALSE;FALSE;TRUE;FALSE;mouse;Switzerland;Switzerland;Switzerland
+252;44;female;(specialized) university-level graduation;bachelor;FALSE;FALSE;FALSE;FALSE;TRUE;touchpad;Germany;Germany;Germany

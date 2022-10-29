@@ -1,0 +1,15 @@
+ENCODING;ANIMACY_INT_ARG;ANIMACY_OBJ;ANIMACY_SUBJ;INT_ARG;P;PHENOMENON;INT_ARG_TYPE ; 
+f20;;animate;animate;;;trans_Q; ;
+f22;;animate;animate;;;trans_Q; ;
+f23;;animate;animate;;;trans_Q; ;
+f27;;;animate;;;SUBJ REFL; ;
+f28;;;animate;;;SUBJ REFL; ;
+f29;;;animate;;;SUBJ REFL; ;
+f30;;;animate;;;SUBJ REFL; ;
+f33;inanimate;;animate;Ausbildungsberuf;FÜR;SUBJ REFL PO; ;
+f37;animate;;animate;Kommilitone;MIT;SUBJ REFL PO; ;
+f38;inanimate;;animate;Stadt;BEI;SUBJ REFL PO; ;
+f41;;animate;animate;;;STM_SUBJ; ;
+f43;;animate;inanimate;;;STM_SUBJ; ;
+f46;;animate;inanimate;;;STM_SUBJ; ;
+f47;;animate;animate;;;STM_SUBJ; ;
