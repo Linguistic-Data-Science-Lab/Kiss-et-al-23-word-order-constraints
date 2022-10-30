@@ -1,0 +1,49 @@
+"ENCODING";"ANIMACY_INT_ARG";"ANIMACY_OBJ";"ANIMACY_SUBJ";"INT_ARG";"P";"PHENOMENON";"SYNTAX_INT_ARG"
+"f01";"inanimate";"inanimate";"animate";"Teppich";"UNTER";"trans_CVC";"P DETdef N"
+"f02";"inanimate";"inanimate";"animate";"Anspruch";"IN";"trans_CVC";"P N"
+"f03";"inanimate";"inanimate";"animate";"Aussicht";"IN";"trans_CVC";"P N"
+"f04";"inanimate";"inanimate";"animate";"Punkt";"AUF";"trans_CVC";"P DETdef N"
+"f05";"inanimate";"inanimate";"animate";"Kenntnis";"ZU";"trans_CVC";"P(DETdef) N"
+"f06";"inanimate";"inanimate";"animate";"Verkauf";"ZU";"trans_CVC";"P(DETdef) N"
+"f07";"inanimate";"inanimate";"animate";"Verschluss";"UNTER";"trans_CVC";"P N"
+"f08";"inanimate";"inanimate";"animate";"Eis";"AUF";"trans_CVC";"P N"
+"f09";NA;"animate";"animate";NA;NA;"STM_OBJ";NA
+"f10";NA;"inanimate";"animate";NA;NA;"STM_OBJ";NA
+"f11";NA;"inanimate";"animate";NA;NA;"STM_OBJ";NA
+"f12";NA;"animate";"animate";NA;NA;"STM_OBJ";NA
+"f13";NA;"animate";"animate";NA;NA;"STM_OBJ";NA
+"f14";NA;"animate";"animate";NA;NA;"STM_OBJ";NA
+"f15";NA;"inanimate";"animate";NA;NA;"STM_OBJ";NA
+"f16";NA;"inanimate";"animate";NA;NA;"STM_OBJ";NA
+"f17";NA;"inanimate";"animate";NA;NA;"trans_Q";NA
+"f18";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f19";"animate";NA;"animate";"Kommilitone";"MIT";"SUBJ REFL PO";"P DETindef N"
+"f20";NA;"animate";"inanimate";NA;NA;"STM_SUBJ";NA
+"f21";NA;"animate";"animate";NA;NA;"trans_Q";NA
+"f22";NA;"animate";"animate";NA;NA;"trans_Q";NA
+"f23";NA;"inanimate";"animate";NA;NA;"trans_Q";NA
+"f24";NA;"inanimate";"animate";NA;NA;"trans_Q";NA
+"f25";NA;"animate";"animate";NA;NA;"trans_Q";NA
+"f26";NA;"animate";"animate";NA;NA;"trans_Q";NA
+"f27";NA;"inanimate";"animate";NA;NA;"trans_Q";NA
+"f28";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f29";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f30";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f31";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f32";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f33";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f34";NA;NA;"animate";NA;NA;"SUBJ REFL";NA
+"f35";"inanimate";NA;"animate";"Ausbildungsberuf";"FÜR";"SUBJ REFL PO";"P DETindef N"
+"f36";"animate";NA;"animate";"Max";"BEI";"SUBJ REFL PO";"P N"
+"f37";"animate";NA;"animate";"Pia";"MIT";"SUBJ REFL PO";"P N"
+"f38";"inanimate";NA;"animate";"Verhaltensweise";"FÜR";"SUBJ REFL PO";"P POSS N"
+"f39";"inanimate";NA;"animate";"Umgangston";"FÜR";"SUBJ REFL PO";"P POSS N"
+"f40";"inanimate";NA;"animate";"Tierschutz";"FÜR";"SUBJ REFL PO";"P DETdef N"
+"f41";"inanimate";NA;"animate";"Fachliteratur";"IN";"SUBJ REFL PO";"P DETdef N"
+"f42";NA;"animate";"animate";NA;NA;"STM_SUBJ";NA
+"f43";NA;"animate";"inanimate";NA;NA;"STM_SUBJ";NA
+"f44";NA;"animate";"inanimate";NA;NA;"STM_SUBJ";NA
+"f45";NA;"animate";"animate";NA;NA;"STM_SUBJ";NA
+"f46";NA;"animate";"inanimate";NA;NA;"STM_SUBJ";NA
+"f47";NA;"animate";"animate";NA;NA;"STM_SUBJ";NA
+"f48";NA;"animate";"animate";NA;NA;"STM_SUBJ";NA

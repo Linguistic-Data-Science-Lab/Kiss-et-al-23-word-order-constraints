@@ -1695,23 +1695,23 @@ bayes_model &lt;- brm(answer ~ w_indef + ADVERBIAL_TYPE + (0 + ADVERBIAL_TYPE|su
 ## Group-Level Effects: 
 ## ~items (Number of levels: 24) 
 ##               Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(Intercept)     0.61      0.15     0.36     0.95 1.00     4550     7210
+## sd(Intercept)     0.61      0.15     0.35     0.95 1.00     3961     5400
 ## 
 ## ~subjects (Number of levels: 39) 
 ##                                             Estimate Est.Error l-95% CI
-## sd(ADVERBIAL_TYPEINSTR)                         0.91      0.18     0.58
-## sd(ADVERBIAL_TYPECOMO)                          1.08      0.23     0.68
-## cor(ADVERBIAL_TYPEINSTR,ADVERBIAL_TYPECOMO)     0.75      0.17     0.36
+## sd(ADVERBIAL_TYPEINSTR)                         0.90      0.18     0.58
+## sd(ADVERBIAL_TYPECOMO)                          1.07      0.23     0.67
+## cor(ADVERBIAL_TYPEINSTR,ADVERBIAL_TYPECOMO)     0.75      0.16     0.36
 ##                                             u-95% CI Rhat Bulk_ESS Tail_ESS
-## sd(ADVERBIAL_TYPEINSTR)                         1.30 1.00     5057     7600
-## sd(ADVERBIAL_TYPECOMO)                          1.59 1.00     5521     7914
-## cor(ADVERBIAL_TYPEINSTR,ADVERBIAL_TYPECOMO)     0.98 1.00     2928     3952
+## sd(ADVERBIAL_TYPEINSTR)                         1.29 1.00     4845     7145
+## sd(ADVERBIAL_TYPECOMO)                          1.58 1.00     4417     7644
+## cor(ADVERBIAL_TYPEINSTR,ADVERBIAL_TYPECOMO)     0.98 1.00     2830     3897
 ## 
 ## Population-Level Effects: 
 ##                    Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-## Intercept             -0.67      0.27    -1.21    -0.14 1.00     4806     6993
-## w_indefyes            -0.06      0.17    -0.39     0.26 1.00    16224     9458
-## ADVERBIAL_TYPECOMO    -1.00      0.33    -1.68    -0.35 1.00     5011     7389
+## Intercept             -0.66      0.27    -1.20    -0.15 1.00     4484     6525
+## w_indefyes            -0.06      0.17    -0.39     0.26 1.00    15257     8631
+## ADVERBIAL_TYPECOMO    -1.01      0.34    -1.70    -0.37 1.00     4577     6674
 ## 
 ## Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
 ## and Tail_ESS are effective sample size measures, and Rhat is the potential
