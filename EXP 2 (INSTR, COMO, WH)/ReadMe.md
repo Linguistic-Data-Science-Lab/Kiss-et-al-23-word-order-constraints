@@ -8,7 +8,7 @@
 
 # Study Details
 - Study Title: ExPrep Exp 2 (Instrumentals vs. Comitatives, wh-indefinite vs. NP)
-- Date (conducted on):  2022-06-01
+- Date (conducted on):  2022-07-01
 - Recruitment: Prolific (https://prolific.co)
 - Prescreening: Native Speakers of German, monolingual
 - Payment:   3.02£ (ca.  3.49€)
