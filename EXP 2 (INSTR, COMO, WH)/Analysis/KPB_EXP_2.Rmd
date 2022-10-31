@@ -177,7 +177,7 @@ ggplot(ranef.df, aes(y = Instrumental, x = Comitative)) +
         plot.subtitle = element_text(face = "bold", size = 10))
 ```
 
-The strong positive correlation between choices for `PP > OBJ` given `COM(O)` and `PP > OBJ` given `INSTR` merits further investigations. 
+The strong positive correlation between choices for `PP > OBJ` given `COM(O)` and `PP > OBJ` given `INSTR` merits further investigations. We have added a Baysian Regression Model, which provides information on the credible interval of the correlation between the random effects, which merits further concern. 
 
 
 ```{r brms}
