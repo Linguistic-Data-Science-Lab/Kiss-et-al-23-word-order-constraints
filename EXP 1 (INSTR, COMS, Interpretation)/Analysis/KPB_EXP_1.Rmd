@@ -81,6 +81,8 @@ ggplot(summary, aes(x = ADVERBIAL_TYPE, y = count, fill = ANSWER)) +
                     labels = c("OBJ > PP", "PP > OBJ")) +
   theme_bw()
 
+ggsave("/Users/tibor/Documents/GitHub/Kiss_et_al_22_word_order_constraints_on_event_internal_modifiers/emp_dist_exp_1.pdf")
+
 summary.wide <-
   summary %>%
   spread(key = ANSWER, value = count)
