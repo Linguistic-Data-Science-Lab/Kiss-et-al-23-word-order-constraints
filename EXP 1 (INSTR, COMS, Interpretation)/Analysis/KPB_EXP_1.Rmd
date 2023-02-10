@@ -163,6 +163,33 @@ ggplot(predictions.emm, aes(x = ADVERBIAL_TYPE, y = prob)) +
   labs(x = "Adverbial Types", y = "Pr(PP>OBJ)")
 ```
 
+### Choices for privative test items
+
+The following summary and plot identifies the number of answers `PP > OBJ` for test items with privative interpretations for both adverbial types. 
+
+
+```{r choices for privative test items, message = FALSE}
+
+privative.sum <- 
+  data %>%
+  filter(items %in% c("t07", "t08", "t09", "t10", "t11", "t12", 
+                      "t19", "t20", "t21", "t22", "t23", "t24")) %>%
+  group_by(items, ADVERBIAL_TYPE, ANSWER) %>%
+  summarize(Count = n()) %>%
+  filter(ANSWER == "PP>OBJ") %>%
+  as.data.frame()
+
+ggplot(privative.sum, aes(x = Count, y = items, color = ADVERBIAL_TYPE)) +
+  geom_segment(aes(x = 0, xend = Count, yend = items), color="darkgrey") +
+  geom_point(size=5) +
+  scale_color_brewer(name = "Adverbial Types", labels = c("instrumental", "comitative"), 
+                     palette = "Set1") +
+  scale_x_continuous(breaks = c(0, 10, 20, 33), limits = c(0, 33)) +
+  geom_vline(xintercept = 16) +
+  labs(x = "Number of PP > OBJ choices (out of 33 items)")
+
+```
+
 
 ### Plotting correlations for random effects
 
