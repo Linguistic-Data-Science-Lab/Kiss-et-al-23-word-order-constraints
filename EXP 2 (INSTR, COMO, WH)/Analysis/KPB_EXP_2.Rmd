@@ -1,204 +1,144 @@
 ---
-title: "EXP 2 (Kiss, Pieper, Börner 2022)"
-output: html_document
-date: "16.10.2022"
+title: "EXP 2 (Kiss, Pieper, Börner 2023)"
+output:
+  html_document: default
+  pdf_document: default
+date: "15.02.2023"
 ---
 
 ### Analysis of experimental study on object-oriented and subject-oriented modifiers
 
-This document provides the analysis for the experimental study object-oriented and subject-oriented event-internal modifiers with alternating wh-indefinites and full indefinite NPs used in Kiss, Pieper, Börner (2022) (EXP 2).
+This document provides the analysis for the experimental study on object-oriented and subject-oriented event-internal modifiers with alternating wh-indefinites and full indefinite NPs discussed in Kiss, Pieper, Börner (2023) (EXP 2).
 
 #### Read in required libraries
 
 ```{r libraries, warning=FALSE, message=FALSE}
 library(lme4)
 library(tidyverse)
-library(emmeans)
+library(emmeans) 
 library(kableExtra)
-library(brms)
+library(brms)  
 
 show(version)
 ```
 
-
-#### Summary of test items for EXP 2
-
-The following table contains the minimal pairs of test items used in EXP 2. The test items were identical except for the difference between the _wh-_indefinite and the full NP. Hence, the test items in EXP 2 have been split up on two lists (the recall of which showed an unequal distribution, see below).   
-
-```{r read in test items for presentation, echo = FALSE}
-
-test_items <- 
-  read.csv2("../Data/EXP_2_Test_Items.csv", fileEncoding = "UTF-8", stringsAsFactors = TRUE)
-
-test_items <- test_items %>%
-  select(encoding, adverbial_type, orientation, condition.1, condition.2, condition.3, condition.4)
-
-test_items_list_1 <- test_items[, c(1, 2, 4, 5)]
-test_items_list_2 <- test_items[, c(1, 2, 6, 7)]
-
-kbl(test_items_list_1, col.names = c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP"),
-    caption = text_spec("wh indefinites", bold = TRUE, color = "black", font_size = 16)) %>% kable_styling()
-kbl(test_items_list_2, col.names = c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP"),
-    caption = "NP indefinites") %>% kable_styling()
-
-```
-
-
 ### Read in data
 
+We provide a summary of the data. The test items contained in the data set are pretty-printed below.
 
 ```{r read-in data}
-data <- read.csv("../Data/ForcedChoice_test.csv", stringsAsFactors = TRUE) %>% 
-  mutate(w_indef = factor(ifelse(str_detect(itemId, "_1_2"), "yes", "no")),
-         answer = factor(ifelse(ANSWER_CONDITION %in% c("condition 1", "condition 3"), "PP>OBJ", "OBJ>PP")),
-         ADVERBIAL_TYPE = relevel(factor(ADVERBIAL_TYPE), ref = "INSTR"),
-         subjects = factor(workerId),
-         itemId_nolist = str_extract(itemId, "t\\d{2}"), 
-         items = factor(itemId_nolist)) %>%
-  select(-c(ANSWER_CONDITION_NO, CLICK_COUNT_OPTION_0, CLICK_COUNT_OPTION_1, componentResultId, INT_ARG_TYPE, 
-            internal_node_id, ITEM_FUNCTION, ITEM_GROUP, OPTION_0_CONDITION, OPTION_0_KEY_CONDITION, 
-            OPTION_1_CONDITION, PHENOMENON, studyCode, studyId, studyTitle, studyResultId, ADVERBIAL_CLASS, 
-            ANIMACY_INT_ARG, ANIMACY_OBJ, ANIMACY_SUBJ, ANSWER, ANSWER_HISTORY,
-            batchId, batchTitle, component_repetition_count, componentId, componentPos, componentTitle,
-            groupResultId, ITEM_SUBGROUP, OPTION_1_KEY_CONDITION, PRESENTATION_ORDER, responses,
-            responses_extended, responses_info))
+data <-
+  read.csv("../Data/EXP_2_test.csv", 
+           fileEncoding = "UTF-8", stringsAsFactors = TRUE) %>%
+  mutate(TYPE = relevel(TYPE, ref = "INSTR"),
+         OBJform = relevel(OBJform, ref="NP"))
 
-summary(data)
+summary(subset(data, select = -c(OPTION_0_ITEM, OPTION_1_ITEM, OPTION_0_KEY_CONDITION, 
+                                 OPTION_1_KEY_CONDITION, date_time_begin, date_time_end)))
 
 ```
 
-#### Determining distribution of lists
+### Test items
 
-Following the guide lines developed in Pieper et al. (2022), participants are assessed with respect to reaction times and answers towards control items, which may lead to an exclusion of participants. In EXP 2, this led to an uneven distribution of the lists. This does not affect the modelling of the data. 
+The following table provides the 24 minimal pairs of test items used in EXP 2. The experimental data have been judged by 31 participants after filtering unattentive participants according to Pieper et al. (2023).  
 
-```{r distribution of lists, echo = FALSE, message = FALSE}
+```{r read in test items for presentation, echo = FALSE, message = FALSE}
 
-item.sum <- 
-  data %>%
-  separate(itemId, c("item", "obj_type"), sep = 3) %>%
-  mutate(obj_type = ifelse(obj_type == "_1_2", "WH", "NP")) %>%
-  group_by(item, obj_type) %>%
-  summarize(subjects = n()) %>%
-  spread(key = obj_type, value = subjects) %>%
-  as.data.frame()
+data.sum <- data %>%
+  select(ITEM_ID, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
+  group_by(ITEM_ID, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
+  summarize(count = n())
 
-list.sum <- 
-  data %>%
-  group_by(LIST) %>%
-  summarize(count = n()/24) %>%
-  as.data.frame()
+colnames(data.sum)[1:4] <- c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP")
 
-```
-
-```{r}
-list.sum
+kbl(data.sum[,1:4]) %>% kable_styling()
 
 ```
 
 #### Empirical distribution of choices
 
-The empirical distribution of choices already indicates that an influence of the form of the NP (WH/NP) cannot be found.
+The following plot shows the distribution of empirical choices of the serializations (`PP > OBJ`, `OBJ > PP`) across the two types of adverbials (`INSTR`, `COM(O)`). 
 
-```{r empirical distribution, warning = FALSE, message = FALSE, fig.width = 8}
+##### Object-oriented comitatives
 
-ADV.labels <- c("Comitative (obj.)", "Instrumental")
-names(ADV.labels) <- c("COM(O)", "INSTR")
+For `COM(O)`, we notice a strong preference for the serialization `OBJ > PP`, which is in line with previous analyses and the results of `EXP1`. We also observe some differences with regard to the two different types of realization of the object (wh indefinite vs. full indefinite), and in particular an empirical preference for `PP > OBJ ` if the object is a wh indefinite, but this might be due to chance (see the model below). 
+
+##### Instrumentals
+
+For `INSTR`, we also observe an empirical preference for `OBJ > PP`, but a less pronounced one. What we also observe is that there is less variation between the two forms of the object (wh indefinite vs. full indefinite). While there is a slight preference for `PP > OBJ` for wh indefinites, the model indicates that it is not significant (see below).
+
+
+```{r empirical distribution, message = FALSE}
 
 summary <- 
-  data %>%
-  group_by(ADVERBIAL_TYPE, w_indef, answer) %>%
-  summarise(count = n()) %>%
-  as.data.frame()
+  data %>% 
+  group_by(TYPE, OBJform, ANSWER) %>% 
+  summarise(count=n())
 
-ggplot(summary, aes(x = answer, y = count, fill = w_indef)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(x = "Choice", y = "Frequency of Choice") +
-  scale_fill_manual(name = "Form of OBJ", 
-                      labels = c("NP", "WH"), 
-                      values = c("grey80", "grey40")) +
-  facet_wrap(~ADVERBIAL_TYPE, labeller = labeller(ADVERBIAL_TYPE = ADV.labels)) +
-  theme_bw()
+summary
+
+ggplot(summary, aes(x = ANSWER, y = count, fill = OBJform)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(x = "Serialization", y = "Frequency of serialization") +
+  scale_fill_manual(name = "Form of obj.", values = c("NP" = "steelblue","wh" = "grey80"),
+                    labels = c("NP (indef.)", "wh indefinite")) + 
+  facet_wrap(~TYPE)
 
 ```
 
 ### Random slope model for full data set
 
-The model shows no influence of the form of the NP. 
+It is not only the form of the object (`OBJform`)that does not receive a significant coefficient, but the coefficient for the type of adverbial (`TYPE`) also borders the threshold of p < 0.05. Given this situation, we have chosen a rather simple random structure with a random intercept for the items (`ITEM_ID`), which do not vary across subjects anyway, and a random slope for participants (intercept + `TYPE`). 
+
 
 ```{r model}
-model <- glmer(answer ~ w_indef + ADVERBIAL_TYPE + (0 + ADVERBIAL_TYPE|subjects) + (1|items), 
-               data = data, family = "binomial")
+model_1 <- glmer(ANSWER ~ TYPE + OBJform + 
+                     (1 + TYPE | workerId) + 
+                     (1|ITEM_ID), data = data, family = "binomial")
 
-summary(model)
+summary(model_1)
 
-predictions <- 
-  emmeans(model, pairwise~ADVERBIAL_TYPE + w_indef, 
-          type = "response") 
+results_1 <- emmeans(model_1, pairwise~TYPE + OBJform, type = "response")
 
-predictions.emm <- data.frame(predictions$emmeans)
+results_1$emmeans
 
-wh.labels <- c("wh indefinite", "Full NP")
-names(wh.labels) <- c("yes", "no")
+```
 
-ggplot(predictions.emm, aes(x = w_indef, y = prob)) + 
-  geom_bar(aes(), stat = "identity", fill = "grey", width = 0.3) +
-  facet_wrap(~ADVERBIAL_TYPE, labeller = labeller(ADVERBIAL_TYPE = ADV.labels)) +
-  scale_x_discrete(labels = c("no" = "Full NP", "yes" = "wh indefinite")) +
-  labs(x = "Type of NP", y = "Pr(PP>OBJ)")
+```{r model without OBJform}
+
+data <- 
+  data %>%
+  mutate(TYPE = relevel(TYPE, ref = "COM(O)"))
+
+model_2 <- glmer(ANSWER ~ TYPE + 
+                     (1 + TYPE | workerId) + 
+                     (1|ITEM_ID), data = data, family = "binomial")
+
+summary(model_2)
+
+results_2 <- emmeans(model_2, "TYPE" , type = "response")
+
+results_2
+```
+
+The following Bayesian model is included to provide more information about the likelihood distribution of the predictors. The Bayesian model shows that even for the intercept, we find a small percentage of samples with effect sizes in the region of practical equivalence (ROPE). Hence, the hypothesis that the reference values show no effect can neither be rejected nor confirmed. The number of samples contained in the ROPE, however, is small (< 6 %), particularly if compared to the number of samples in the ROPE for `OBJform == wh`.   
+
+```{r Bayesian model}
+
+model_3 <- brm(ANSWER ~ TYPE + OBJform + (1 + TYPE | workerId) + (1|ITEM_ID), 
+                  data = data, 
+                  bernoulli(link = "logit"),
+                  warmup = 1000,
+                  iter = 2000,
+                  chains = 4, 
+                  cores = parallel::detectCores())
+
+model_3
+
+bayestestR::equivalence_test(model_3)
+
+plot(model_3, variable = "^b_", regex = TRUE)
 
 
 ```
 
-
-### Plotting correlations for random effects
-
-The following plot provides an illustration of the correlation between random effects for the two different adverbial types. 
-
-```{r plots for random structure (participants)}
-
-ranef.df <- data.frame(ranef(model)$subjects)
-ranef.df$participants <- rownames(ranef.df)
-
-colnames(ranef.df)[1:2] <- c("Instrumental", "Comitative")
-
-ranef.df <- ranef.df %>%
-  arrange(Comitative)
-
-cor_vals <- data.frame(VarCorr(model))
-
-ggplot(ranef.df, aes(y = Instrumental, x = Comitative)) +
-  geom_point(aes(color = participants), show.legend = FALSE) +
-  labs(y = "PP > OBJ given INSTR", 
-       x = "PP > OBJ given COM(O)", 
-       subtitle = "Correlation of random slopes for ADVERBIAL_TYPEs",
-       caption = paste("Correlation is ", round(cor_vals$sdcor[3], 2))) +
-  theme_bw() +
-  theme(plot.caption = element_text(face = "bold", size = 10),
-        plot.subtitle = element_text(face = "bold", size = 10))
-```
-
-The strong positive correlation between choices for `PP > OBJ` given `COM(O)` and `PP > OBJ` given `INSTR` merits further investigations. We have added a Baysian Regression Model, which provides information on the credible interval of the correlation between the random effects, which merits further concern. 
-
-
-```{r brms}
-mcmc_controls <- list(adapt_delta = 0.9,
-                      max_treedepth = 13)
-
-options(mc.cores=parallel::detectCores())
-
-weak_priors <- c(
-  prior(normal(0, 2), class = "Intercept"),
-  prior(normal(0, 2), class = "b", coef = w_indefyes),
-  prior(normal(0, 2), class = "b", coef = ADVERBIAL_TYPECOMO))
-
-bayes_model <- brm(answer ~ w_indef + ADVERBIAL_TYPE + (0 + ADVERBIAL_TYPE|subjects) + (1|items), 
-               data = data, 
-               family = bernoulli(link = "logit"),
-               prior = weak_priors,
-               chains = 4,
-               warmup = 1000,
-               iter = 4000)
-
-summary(bayes_model)
-
-prior_summary(bayes_model)

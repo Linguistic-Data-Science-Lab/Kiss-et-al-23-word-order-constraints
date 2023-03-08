@@ -2,28 +2,29 @@
 - Authors: Tibor Kiss, Alicia Katharina Börner, Jutta Pieper
 - Affiliation: Linguistic Data Science Lab (LDSL), Ruhr-Universität Bochum, Germany
 - Publication: Word order constraints on event-internal modifiers
-- Date: 28.10.2022
+- Date: 08.03.2023
 - Abstract: 
 > In this study, we have tested object-oriented comitative PPs (COM(O)), and subject-oriented instrumental PPs (INSTR) to the left and to the right of an object, which was realized either as a wh-indefinite or a regular NP (with an indefinite determiner). We predict that the two adverbials differ in their positional behavior. The reason is the orientation of the adverbials: object-related PPs should be realized below the object, while a realization of subject-related PPs could be possible at any position below the subject, including a position between the subject and the object. This hypothesis differs from Frey & Pittner’s (1998), who assume that COM(O) should be found to the right of the object, but INSTR to the immediate right of the subject. 
 
+
 # Study Details
 - Study Title: ExPrep Exp 2 (Instrumentals vs. Comitatives, wh-indefinite vs. NP)
-- Date (conducted on):  2022-07-01
+- Date (conducted on):  2023-01-25
 - Recruitment: Prolific (https://prolific.co)
 - Prescreening: Native Speakers of German, monolingual
-- Payment:   3.02£ (ca.  3.49€)
+- Payment:   3.50£ (ca.  3.96€)
 - Estimated Time Required: 20 minutes
 - Used Software: 
 	+ jspysch (https://www.jspsych.org)
  	+ jatos (https://www.jatos.org/Whats-JATOS.html - Version 3.5.11)	
+
 
 # Survey Details
 
 > Note: **column_names** are printed in boldface, *level_names* in italics
 
 - Task: Two Alternative Forced Choice
-- Design: **ANSWER** (*PP>OBJ*, *OBJ>PP*) ~ **ADVERBIAL_TYPE** (*INSTR*,*COM(O)*) x **OBJ_CONDITION** (*wh*,*np*) 
-- Lists: 2
+- Design: **ANSWER** (*PP>OBJ*, *OBJ>PP*) ~ **TYPE** (*INSTR*,*COM(O)*) x **OBJform** (*wh*,*np*) 
 - List length: 72
 - **ITEM_GROUP**s:
 	+ *test*: 24
@@ -37,8 +38,7 @@
 		+ *attention*: 12
 		+ (other) *filler*: 14
 - randomization
-	- participants are assigned to lists randomly
-	- the presentation order of each stimulus-pair is randomized individually for each trial for each participant (see **PRESENTATION_ORDER**)
+	- the presentation order of each stimulus-pair is randomized individually for each trial for each participant
 	- each survey is randomized individually for each participant according to the following conditions: 
 		+ the survey starts with calibration items in random order 
 		+ control items are (otherwise) spread over the whole survey
@@ -48,37 +48,35 @@
 
 
 # Participants
-- Accepted: 39
-	+ Gender: 18 male, 20 female, 1 no specification
-	+ Age: 18 - 44 (Ø25,51)
-- Rejected: 5 
-	+ Gender: 2 male, 3 female
-	+ Age: 18 - 22 (Ø20,2)
+- Accepted: 31
+	+ Gender: 16 male, 14 female, 1 diverse
+	+ Age: 18 - 73 (Ø33,84)
+- Rejected: 19
+	+ Gender: 8 male, 9 female, 2 no specification
+	+ Age: 19 - 67 (Ø29,23)
 	+ Reasons:
-		- failed on control items: 1  (i.e. picked the unacceptable option of at least *one* control item)
-		- highly distracted: 3 
-		- left before the survey started: 1
+		- highly distracted and/or failed on control items (i.e. picked the unacceptable option of at least *one* control item): 14
+		- left before the survey started: 5
+
 
 # VARIABLES: ForcedChoice (Experimental Eliciation, Survey)
 - id columns:
 	- **workerId**: id of participant
-	- **ENCODING**: id of item's lexicalizations
-	- **itemId**: unique identifier of the item (i.e. **ENCODING**_**OPTION_0_CONDITION_NO**_**OPTION_1_CONDITION_NO**)
+	- **ITEM_ID**: id of a minimal pair
+	- **OPTION_[0|1]KEY_CONDITION**: Order variant of an individual test stimulus (provides unique identifier of an individual stimulus in combination with ITEM_ID)
+   > Note: for *filler* items, conditions are coded as followed (**comment** gives further details): 
+	acceptable
+        * -> ungrammatical 
+        ? -> odd / marked
 - answer-related columns:
 	- **rt**: reaction / response time: time (ms) needed to answer this trial (from appearance of trial till continue-button pressed)
+	- **date_time_begin**:point in time presentation of a stimulus started
+	- **date_time_end**:point in time presentation of a stimulus ended
 	- **ANSWER**: KEY_CONDITION of the chosen option (i.e. OPTION_[0|1]_KEY_CONDITION of the stimulus)
-	- **ANSWER_CONDITION(_NO)**: condition (number) of chosen option
-    > Note: for *filler* items, conditions are coded as followed: 
-        1 -> grammatical 
-        2 -> * ungrammatical
-        3 -> ? odd / marked
-    > **KEY_CONDITION**s of the stimuli may give further details
 - presentation-related columns:
-	- **PRESENTION_ORDER** (+ PRESENTATION_ORDER_CONDITION): *a >> b* means that a has been presented above b 
 	- **ANSWER_POSITION** (*above*/*below*): chosen answer has been presented above/below the other option
 - survey-related columns:
 	- **trial_index**: trial has been shown as the (trial_index+1)th trial of the survey (first trial has trial_index 0)
-	- **time_elapsed**: time (ms) since the survey started (first trial shown)
 
 
 # Variables: Participants 	

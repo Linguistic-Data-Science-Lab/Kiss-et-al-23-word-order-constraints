@@ -1,0 +1,32 @@
+workerId,AGE,GENDER,EDUCATION,EDUCATION_PROFESSIONAL,MISC_ABROAD,MISC_MULTILINGUAL,MISC_NO_SPEC,MISC_NON_NAIVE,MISC_NONE,DEVICE,Country.of.Birth,country.of.Residence,Nationality
+455,73,male,(specialized) university-level graduation,diploma,FALSE,FALSE,FALSE,TRUE,FALSE,keyboard,Switzerland,Switzerland,Switzerland
+456,42,female,(specialized) university-level graduation,master,FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
+457,26,male,secondary school graduation,apprenticeship (dual),FALSE,TRUE,FALSE,FALSE,FALSE,mouse,Austria,Austria,Austria
+458,22,male,secondary school graduation,in training,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Switzerland,Switzerland,Switzerland
+461,20,female,(specialized) university-level graduation,in training,FALSE,FALSE,FALSE,FALSE,TRUE,touchscreen,Germany,Germany,Germany
+463,37,female,(specialized) university-level graduation,doctorate,FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
+465,23,male,(specialized) university-level graduation,in training,FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
+466,55,male,(specialized) university-level graduation,doctorate,TRUE,FALSE,FALSE,FALSE,FALSE,touchpad,Germany,United Kingdom,Germany
+467,55,male,no specification,no specification,FALSE,FALSE,TRUE,FALSE,FALSE,andere,Austria,Germany,Austria
+468,26,female,(specialized) university-level graduation,master,FALSE,TRUE,FALSE,FALSE,FALSE,mouse,Germany,Germany,Germany
+470,34,male,(specialized) university-level graduation,master,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+471,24,female,(specialized) university-level graduation,bachelor,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+472,32,male,(specialized) university-level graduation,bachelor,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+473,29,male,(specialized) university-level graduation,master,FALSE,TRUE,FALSE,FALSE,FALSE,mouse,Germany,Germany,Germany
+474,48,female,(specialized) university-level graduation,apprenticeship (dual),FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
+476,21,male,secondary school graduation,in training,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Austria,Austria,Austria
+479,23,male,(specialized) university-level graduation,none,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+480,22,diverse,(specialized) university-level graduation,in training,TRUE,FALSE,FALSE,FALSE,FALSE,touchpad,Germany,Spain,Germany
+483,34,male,(specialized) university-level graduation,apprenticeship (dual),FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+484,34,male,(specialized) university-level graduation,bachelor,FALSE,TRUE,FALSE,FALSE,FALSE,mouse,Germany,Germany,Germany
+486,52,female,(specialized) university-level graduation,doctorate,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+487,41,female,(specialized) university-level graduation,in training,FALSE,TRUE,FALSE,FALSE,FALSE,touchpad,Russian Federation,United States,Germany
+489,29,female,(specialized) university-level graduation,bachelor,FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
+491,46,female,(specialized) university-level graduation,master,FALSE,FALSE,FALSE,TRUE,FALSE,touchpad,Germany,Germany,Germany
+494,27,female,(specialized) university-level graduation,in training,FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
+495,18,female,in education,none,FALSE,FALSE,FALSE,FALSE,TRUE,touchscreen,Germany,Germany,Germany
+496,22,female,(specialized) university-level graduation,bachelor,TRUE,FALSE,FALSE,TRUE,FALSE,touchpad,Austria,France,Austria
+497,33,male,(specialized) university-level graduation,bachelor,FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+499,40,male,secondary school graduation,apprenticeship (dual),FALSE,FALSE,FALSE,FALSE,TRUE,mouse,Germany,Germany,Germany
+502,22,female,(specialized) university-level graduation,bachelor,TRUE,FALSE,FALSE,FALSE,FALSE,touchpad,Germany,Sweden,Germany
+505,40,male,(specialized) university-level graduation,bachelor,FALSE,FALSE,FALSE,FALSE,TRUE,touchpad,Germany,Germany,Germany
