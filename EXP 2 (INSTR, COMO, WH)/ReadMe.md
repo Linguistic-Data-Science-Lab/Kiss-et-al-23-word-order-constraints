@@ -25,6 +25,7 @@
 
 - Task: Two Alternative Forced Choice
 - Design: **ANSWER** (*PP>OBJ*, *OBJ>PP*) ~ **TYPE** (*INSTR*,*COM(O)*) x **OBJform** (*wh*,*np*) 
+- Lists: 1
 - List length: 72
 - **ITEM_GROUP**s:
 	+ *test*: 24
