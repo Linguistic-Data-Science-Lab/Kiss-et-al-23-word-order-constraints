@@ -80,9 +80,26 @@ summary
 ggplot(summary, aes(x = ANSWER, y = count, fill = OBJform)) +
   geom_bar(stat = "identity", position = "dodge") + 
   labs(x = "Serialization", y = "Frequency of serialization") +
-  scale_fill_manual(name = "Form of obj.", values = c("NP" = "steelblue","wh" = "grey80"),
+  scale_fill_manual(name = "Form of obj.", values = c("NP" = "grey40","wh" = "grey80"),
                     labels = c("NP (indef.)", "wh indefinite")) + 
   facet_wrap(~TYPE)
+
+form.labels <- c("Full NP indefinite", "wh-indefinite")
+names(form.labels) <- c("NP", "wh")
+
+
+ggplot(summary, aes(x = TYPE, y = count, fill = ANSWER)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(x = "Adverbial Type", y = "Frequency of Choice") +
+  scale_fill_manual(name = "Choice", values = c("OBJ>PP" = "grey40","PP>OBJ" = "grey80"),
+                    labels = c("OBJ > PP", "PP > OBJ")) + 
+  facet_wrap(~OBJform, labeller = labeller(OBJform = form.labels))
+
+```
+
+```{r, echo = FALSE, message = FALSE}
+
+ggsave("../Figures/EXP_2.emp_dist.pdf")
 
 ```
 
