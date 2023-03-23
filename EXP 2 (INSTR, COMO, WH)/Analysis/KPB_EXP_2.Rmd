@@ -3,7 +3,7 @@ title: "EXP 2 (Kiss, Pieper, Börner 2023)"
 output:
   html_document: default
   pdf_document: default
-date: "15.02.2023"
+date: "23.03.2023"
 ---
 
 ### Analysis of experimental study on object-oriented and subject-oriented modifiers
@@ -30,11 +30,15 @@ We provide a summary of the data. The test items contained in the data set are p
 data <-
   read.csv("../Data/EXP_2_test.csv", 
            fileEncoding = "UTF-8", stringsAsFactors = TRUE) %>%
-  mutate(TYPE = relevel(TYPE, ref = "INSTR"),
-         OBJform = relevel(OBJform, ref="NP"))
+  mutate(OBJform = relevel(OBJform, ref = "NP"),                    # reference level for OBJform
+         subjects = factor(workerId),
+         items = factor(ITEM_ID))
+
+## The reference level for TYPE is taken to be COM(O)
 
 summary(subset(data, select = -c(OPTION_0_ITEM, OPTION_1_ITEM, OPTION_0_KEY_CONDITION, 
-                                 OPTION_1_KEY_CONDITION, date_time_begin, date_time_end)))
+                                 OPTION_1_KEY_CONDITION, date_time_begin, date_time_end, 
+                                 workerId, ITEM_ID)))
 
 ```
 
@@ -45,8 +49,8 @@ The following table provides the 24 minimal pairs of test items used in EXP 2. T
 ```{r read in test items for presentation, echo = FALSE, message = FALSE}
 
 data.sum <- data %>%
-  select(ITEM_ID, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
-  group_by(ITEM_ID, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
+  select(items, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
+  group_by(items, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
   summarize(count = n())
 
 colnames(data.sum)[1:4] <- c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP")
@@ -57,16 +61,9 @@ kbl(data.sum[,1:4]) %>% kable_styling()
 
 #### Empirical distribution of choices
 
-The following plot shows the distribution of empirical choices of the serializations (`PP > OBJ`, `OBJ > PP`) across the two types of adverbials (`INSTR`, `COM(O)`). 
+The following plot shows the distribution of empirical choices of the serializations (`PP > OBJ`, `OBJ > PP`) across the two different forms of the object (`Full NP indefinite`, `wh-indefinite`). 
 
-##### Object-oriented comitatives
-
-For `COM(O)`, we notice a strong preference for the serialization `OBJ > PP`, which is in line with previous analyses and the results of `EXP1`. We also observe some differences with regard to the two different types of realization of the object (wh indefinite vs. full indefinite), and in particular an empirical preference for `PP > OBJ ` if the object is a wh indefinite, but this might be due to chance (see the model below). 
-
-##### Instrumentals
-
-For `INSTR`, we also observe an empirical preference for `OBJ > PP`, but a less pronounced one. What we also observe is that there is less variation between the two forms of the object (wh indefinite vs. full indefinite). While there is a slight preference for `PP > OBJ` for wh indefinites, the model indicates that it is not significant (see below).
-
+We observe a difference in distribution between full indefinite NPs and wh-indefinites insofar as the distribution of the latter is similar across types, while the former shows clear differences between `INSTR` and `COM(O)`. Regarding the research question, it is of particular interest that the number of `OBJ > PP` serializations for `INSTR` is higher for `wh-indefinites` than for `full indefinite NPs`. A theoretical analysis relying on scrambling would have assumed that `OBJ > PP` could not occur with wh-indefinites, given a base position of the adverbial above the object. 
 
 ```{r empirical distribution, message = FALSE}
 
@@ -76,13 +73,6 @@ summary <-
   summarise(count=n())
 
 summary
-
-ggplot(summary, aes(x = ANSWER, y = count, fill = OBJform)) +
-  geom_bar(stat = "identity", position = "dodge") + 
-  labs(x = "Serialization", y = "Frequency of serialization") +
-  scale_fill_manual(name = "Form of obj.", values = c("NP" = "grey40","wh" = "grey80"),
-                    labels = c("NP (indef.)", "wh indefinite")) + 
-  facet_wrap(~TYPE)
 
 form.labels <- c("Full NP indefinite", "wh-indefinite")
 names(form.labels) <- c("NP", "wh")
@@ -103,59 +93,81 @@ ggsave("../Figures/EXP_2.emp_dist.pdf")
 
 ```
 
-### Random slope model for full data set
+### Random slope model 
 
-It is not only the form of the object (`OBJform`)that does not receive a significant coefficient, but the coefficient for the type of adverbial (`TYPE`) also borders the threshold of p < 0.05. Given this situation, we have chosen a rather simple random structure with a random intercept for the items (`ITEM_ID`), which do not vary across subjects anyway, and a random slope for participants (intercept + `TYPE`). 
+In the following, we define a random slope model (random slopes for the interaction of both predictors) for participants, and a random intercept model for items (which do not vary across conditions). 
+Please notice that the random structure for subjects does not assume intercepts, because we want to obtain information on by-subject variance for each condition. To avoid a possibly spurious convergence warning for the model, we use a wrapper to access a non-linear optimizer from the library `nloptr`. For a general assessment of possibly spurious convergence warning see https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html and particularly https://joshua-nugent.github.io/allFit/. 
 
 
-```{r model}
-model_1 <- glmer(ANSWER ~ TYPE + OBJform + 
-                     (1 + TYPE | workerId) + 
-                     (1|ITEM_ID), data = data, family = "binomial")
+```{r models with interaction, message = FALSE, warning = FALSE}
 
-summary(model_1)
+model <- glmer(ANSWER ~ TYPE * OBJform +
+                 (0 + TYPE * OBJform | subjects) + (1 | items),
+               data = data, family = "binomial",
+               control = glmerControl(
+                 optimizer = "nloptwrap",
+                 optCtrl = list(algorithm = "NLOPT_LN_NELDERMEAD")))
 
-results_1 <- emmeans(model_1, pairwise~TYPE + OBJform, type = "response")
-
-results_1$emmeans
+summary(model)
 
 ```
 
-```{r model without OBJform}
+We notice that all coefficients show significant effects. It is not particularly surprising that `COM(O)` strongly prefers `OBJ > PP`. In the following, we use `emmeans` to calculate the model predictions, which are also printed together with their 95 % CIs. 
 
-data <- 
-  data %>%
-  mutate(TYPE = relevel(TYPE, ref = "COM(O)"))
+```{r model predictions}
 
-model_2 <- glmer(ANSWER ~ TYPE + 
-                     (1 + TYPE | workerId) + 
-                     (1|ITEM_ID), data = data, family = "binomial")
+results <- emmeans(model, pairwise~OBJform * TYPE , type = "response")
 
-summary(model_2)
+results$emmeans
 
-results_2 <- emmeans(model_2, "TYPE" , type = "response")
+emmip(model, TYPE ~ OBJform, type = "response", CIs = TRUE, 
+      xlab = "Form of OBJ", ylab = "Prediction for PP > OBJ")
 
-results_2
+ggsave("../Figures/EXP_2.preds.pdf")
+
 ```
 
-The following Bayesian model is included to provide more information about the likelihood distribution of the predictors. The Bayesian model shows that even for the intercept, we find a small percentage of samples with effect sizes in the region of practical equivalence (ROPE). Hence, the hypothesis that the reference values show no effect can neither be rejected nor confirmed. The number of samples contained in the ROPE, however, is small (< 6 %), particularly if compared to the number of samples in the ROPE for `OBJform == wh`.   
+In the following, we compare the model with interactions to a model with the same random structure, but without interactions. The difference between the two models is significant.
 
-```{r Bayesian model}
+```{r model comparison, message = FALSE}
 
-model_3 <- brm(ANSWER ~ TYPE + OBJform + (1 + TYPE | workerId) + (1|ITEM_ID), 
-                  data = data, 
-                  bernoulli(link = "logit"),
-                  warmup = 1000,
-                  iter = 2000,
-                  chains = 4, 
-                  cores = parallel::detectCores())
+model_2 <- glmer(ANSWER ~ TYPE + OBJform +
+                     (0 + TYPE * OBJform | workerId) +
+                     (1|ITEM_ID), data = data, family = "binomial",
+                   control=glmerControl(optimizer = "nloptwrap",
+                                        optCtrl = list(algorithm = "NLOPT_LN_NELDERMEAD")))
 
-model_3
+anova(model_2, model, test = "Chisq")
 
-bayestestR::equivalence_test(model_3)
+```
 
-plot(model_3, variable = "^b_", regex = TRUE)
+The following Bayesian model is included to provide more information about the likelihood distribution of the predictors. We have included a calculation of the region of practical equivalence (ROPE). For three of the four coefficients, it can be rejected that they do not show an effect (`COM(O)/NP`, `INSTR/NP`, `INSTR/wh`). 
 
+We notice the warning, but it is unclear whether we should consider it or not, see: 
+https://github.com/easystats/bayestestR/discussions/555 and https://easystats.github.io/bayestestR/reference/rope.html.
+
+
+```{r Bayesian model, cache = TRUE}
+
+bayes_model <- brm(ANSWER ~ TYPE * OBJform + (0 + TYPE * OBJform | subjects) + (1|items),
+                   data = data,
+                   bernoulli(link = "logit"),
+                   warmup = 1000,
+                   iter = 4000,
+                   chains = 4,
+                   control = list(adapt_delta = 0.99),
+                   cores = parallel::detectCores())
+
+bayes_model
+
+bayestestR::equivalence_test(bayes_model)
+
+```
+
+```{r plot output}
+
+plot(bayes_model, variable = "^b_", regex = TRUE)
+ggsave("../Figures/EXP_2.bayes.pdf")
 
 ```
 

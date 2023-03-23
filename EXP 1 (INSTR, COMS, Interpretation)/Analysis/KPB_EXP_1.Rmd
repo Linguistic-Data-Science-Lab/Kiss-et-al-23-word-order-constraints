@@ -1,15 +1,15 @@
 ---
 title: "Kiss, Pieper, Börner (2022): EXP 1"
 output: html_document
-date: "29.08.2022, 26.10.2022"
+date: "29.08.2022, 26.10.2022, 23.03.2023"
 author: "Tibor Kiss"
 ---
 
-### Analysis of experimental study on affirmative and privative interpretations
+### Analysis of experimental study on affirmative and privative senses
 
-This document provides the analysis for the experimental study on affirmative and privative interpretations used in Kiss, Pieper, Börner (2022) (EXP 1), revised version after reviews, including the random slopes on the interaction of main effects.
+This document provides the analysis for the experimental study on affirmative and privative senses used in Kiss, Pieper, Börner (2023) (EXP 1), revised version after reviews, including the random slopes on the interaction of main effects.
 
-The analysis differs from earlier versions in that we now use affirmative interpretations as reference values. Also, the experiments make now use of the term _Interpretation_ to distinguish affirmative from privative interpretations of event-internal modifiers. Earlier version used _Thematic Integration_ instead.
+The analysis differs from earlier versions in that we now use affirmative senses as reference values. Also, the experiments make now use of the term _SENSE_ to distinguish affirmative from privative interpretations of event-internal modifiers. Earlier version used _Thematic Integration_ instead.
 
 #### Read in required libraries
 
@@ -46,8 +46,7 @@ We'll use more perspicuous names to address `subjects` and `items`.
 data <-
   read.csv("../Data/ForcedChoice_test.csv", fileEncoding = "UTF-8") %>%
   mutate(ANSWER = factor(ANSWER),
-         INTERPRETATION = ifelse(INTEGRATION == "yes", "affirmative", "privative"),
-         INTERPRETATION = factor(INTERPRETATION),
+         SENSE = factor(ifelse(INTEGRATION == "yes", "affirmative", "privative")),
          ADVERBIAL_TYPE = factor(ADVERBIAL_TYPE),
          subjects = factor(workerId),
          items = factor(ENCODING))
@@ -62,26 +61,26 @@ summary(data)
 
 ```{r empirical distribution, warning = FALSE, message = FALSE, fig.width = 8}
 
-int.labels <- c("Privative Interpretation", "Affirmative Interpretation")
+int.labels <- c("Privative Sense", "Affirmative Sense")
 names(int.labels) <- c("privative", "affirmative")
 
 summary <- 
   data %>%
-  group_by(ADVERBIAL_TYPE, INTERPRETATION, ANSWER) %>%
+  group_by(ADVERBIAL_TYPE, SENSE, ANSWER) %>%
   summarise(count = n()) %>%
   as.data.frame()
 
-summary$INTERPRETATION <- relevel(summary$INTERPRETATION, ref = "privative")
+summary$SENSE <- relevel(summary$SENSE, ref = "privative")
 
 ggplot(summary, aes(x = ADVERBIAL_TYPE, y = count, fill = ANSWER)) +
   geom_bar(stat = "identity", position = "dodge") +
   labs(x = "Adverbial Type", y = "Frequency of Choice") + 
-  facet_wrap(~INTERPRETATION, labeller = labeller(INTERPRETATION = int.labels)) +
+  facet_wrap(~SENSE, labeller = labeller(SENSE = int.labels)) +
   scale_fill_manual(name = "Choice", values = c("grey40", "grey80"),
                     labels = c("OBJ > PP", "PP > OBJ")) +
   theme_bw()
 
-ggsave("/Users/tibor/Documents/GitHub/Kiss_et_al_22_word_order_constraints_on_event_internal_modifiers/emp_dist_exp_1.pdf")
+ggsave("../Figures/emp_dist_exp_1.pdf")
 
 summary.wide <-
   summary %>%
@@ -91,51 +90,35 @@ summary.wide
 
 ```
 
-The graphical representation of the empirical distribution of choices suggests an interaction between the main effects, as is witnessed by the inversion of the distribution of `COM(S)` under `affirmative interpretation`. 
+The graphical representation of the empirical distribution of choices suggests an interaction between the main effects, as is witnessed by the inversion of the distribution of `COM(S)` under `affirmative sense`. 
 
 #### Random Slope Model with interaction
 
-Please notice that the random structure does not assume intercepts, because we want to obtain information on by-subject variance (i.e. workerId) for each condition.
+Please notice that the random structure does not assume intercepts, because we want to obtain information on by-subject variance (i.e. `subjects`) for each condition. We'll have to consider possible spurious convergence warnings, and apply tests from https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html, i.e. Ben Bolker's troubleshooting page for spurious convergence errors. In the present case, the warning can be shown to be a false positive by simply restarting the optimization with the values from the first run.  
+
 
 ```{r random slope model}
 
-data$INTERPRETATION <-
-  relevel(data$INTERPRETATION, ref = "affirmative")
+data$SENSE <-
+  relevel(data$SENSE, ref = "affirmative")
 data$ADVERBIAL_TYPE <-
   relevel(data$ADVERBIAL_TYPE, ref = "INSTR")
 
-
-model1 <- 
-  glmer(formula = ANSWER ~ ADVERBIAL_TYPE * INTERPRETATION + 
-          (0 + ADVERBIAL_TYPE * INTERPRETATION | subjects) , 
+model <-
+  glmer(formula = ANSWER ~ ADVERBIAL_TYPE * SENSE + 
+          (0 + ADVERBIAL_TYPE * SENSE | subjects) + (1 | items), 
         data = data, family = binomial())
 
-options(width = 300)
-summary(model1)
-```
+start <-
+  getME(model, c("theta", "fixef"))
 
-We'll have to consider possible spurious convergence warnings, and apply tests from https://rstudio-pubs-static.s3.amazonaws.com/33653_57fc7b8e5d484c909b615d8633c01d51.html, i.e. Ben Bolker's troubleshooting page for spurious convergence errors.
-
-```{r singularity}
-
-tt <- getME(model1,"theta")
-ll <- getME(model1,"lower")
-```
-
-The comparatively high value of `r round(min(tt[ll==0]), 3)` suggests that singularity is not an issue here. 
-Restarting solves the problem here. 
-
-```{r restarting}
-ss <- 
-  getME(model1, c("theta", "fixef"))
-model2 <- 
-  update(model1,
-         start=ss,
+model <- 
+  update(model, start = start,
          control=glmerControl(optCtrl=list(maxfun=2e4)))
 
-options(width = 300)
-summary(model2)
 
+options(width = 300)
+print(summary(model), corr = FALSE)
 ```
 
 
@@ -144,29 +127,26 @@ summary(model2)
 
 ```{r Model predictions, fig.width = 8}
 
-
 predictions <- 
-  emmeans(model2, pairwise~ADVERBIAL_TYPE * INTERPRETATION, 
+  emmeans(model, pairwise~ADVERBIAL_TYPE * SENSE, 
           type = "response") 
+
+predictions$emmeans
 
 ## also response useful, now switched to predictor for effects
 ## if lp is used, y = emmean, if response is used y = prob
 
-predictions.emm <- data.frame(predictions$emmeans)
- 
+emmip(model, SENSE ~ ADVERBIAL_TYPE, type = "response", CIs = TRUE, 
+      xlab = "Adverbial Type", ylab = "Prediction for PP > OBJ")
 
-predictions.emm
+ggsave("../Figures/EXP_1.preds.pdf")
 
-ggplot(predictions.emm, aes(x = ADVERBIAL_TYPE, y = prob)) + 
-  geom_bar(aes(), stat = "identity", fill = "grey", width = 0.3) +
-  facet_wrap(~INTERPRETATION, labeller = labeller(INTERPRETATION = int.labels)) +
-  labs(x = "Adverbial Types", y = "Pr(PP>OBJ)")
+
 ```
 
 ### Choices for privative test items
 
-The following summary and plot identifies the number of answers `PP > OBJ` for test items with privative interpretations for both adverbial types. 
-
+The following summary and plot identifies the number of answers `PP > OBJ` for test items with privative senses for both adverbial types. 
 
 ```{r choices for privative test items, message = FALSE}
 
@@ -188,6 +168,8 @@ ggplot(privative.sum, aes(x = Count, y = items, color = ADVERBIAL_TYPE)) +
   geom_vline(xintercept = 16) +
   labs(x = "Number of PP > OBJ choices (out of 33 items)")
 
+ggsave("../Figures/EXP_1.choices.pdf")
+
 ```
 
 
@@ -197,15 +179,15 @@ In the following, we plot correlations between the conditions, based on random e
 
 ```{r plots for random structure (participants)}
 
-ranef.df <- data.frame(ranef(model2)$subjects)
+ranef.df <- data.frame(ranef(model)$subjects)
 ranef.df$participants <- rownames(ranef.df)
 colnames(ranef.df)[1:4] <- c("INSTR_aff", "COMS_aff", "INSTR_priv", "COMS_priv")
 
 ranef.df <- ranef.df %>%
-  mutate(INSTR_aff = INSTR_aff + model2@beta[1]) %>%
-  mutate(COMS_aff = COMS_aff + model2@beta[2]) %>%
-  mutate(INSTR_priv = INSTR_priv + model2@beta[3]) %>%
-  mutate(COMS_priv = COMS_priv + model2@beta[4]) %>%
+  mutate(INSTR_aff = INSTR_aff + model@beta[1]) %>%
+  mutate(COMS_aff = COMS_aff + model@beta[2]) %>%
+  mutate(INSTR_priv = INSTR_priv + model@beta[3]) %>%
+  mutate(COMS_priv = COMS_priv + model@beta[4]) %>%
   arrange(COMS_aff)
 
 
@@ -213,8 +195,9 @@ ranef.df <- ranef.df %>%
 
 We make use of `VarCorr(model2)` to extract the correlation parameters from the model (which are correlations of standard deviations). 
 
-```{r correlations affirmative interpretations}
-cor_vals <- data.frame(VarCorr(model2)) 
+```{r correlations affirmative senses}
+
+cor_vals <- data.frame(VarCorr(model)) 
 
 ggplot(ranef.df, aes(y = INSTR_aff, x = COMS_aff)) +
   geom_point(aes(color = participants), show.legend = FALSE) +
@@ -225,6 +208,8 @@ ggplot(ranef.df, aes(y = INSTR_aff, x = COMS_aff)) +
   theme_bw() +
   theme(plot.caption = element_text(face = "bold", size = 10),
         plot.subtitle = element_text(face = "bold", size = 10))
+
+ggsave("../Figures/EXP_1.INSTR_COM_S_aff.pdf")
   
 
 ```
@@ -243,6 +228,8 @@ ggplot(ranef.df, aes(y = INSTR_priv, x = COMS_priv)) +
   theme(plot.caption = element_text(face = "bold", size = 10),
         plot.subtitle = element_text(face = "bold", size = 10))
 
+ggsave("../Figures/EXP_1.INSTR_COM_S_priv.pdf")
+
 ```
 
 Here, we observe a strong negative correlation, which also leads to a (largely unexplained) reversal of preferences in case of privative instrumentals: speakers are most restrictive towards the order `PP > OBJ` for `COM(S)` prefer the same order for privative `INSTR`.   
@@ -259,6 +246,8 @@ ggplot(ranef.df, aes(x = COMS_aff, y = COMS_priv)) +
   theme(plot.caption = element_text(face = "bold", size = 10),
         plot.subtitle = element_text(face = "bold", size = 10))
 
+ggsave("../Figures/EXP_1.COM_S_aff_priv.pdf")
+
 
 ```
 
@@ -274,6 +263,9 @@ ggplot(ranef.df, aes(x = INSTR_aff, y = INSTR_priv)) +
   theme_bw() +
   theme(plot.caption = element_text(face = "bold", size = 10),
         plot.subtitle = element_text(face = "bold", size = 10))
+
+ggsave("../Figures/EXP_1.INSTR_aff_priv.pdf")
+
 
 ```
 
