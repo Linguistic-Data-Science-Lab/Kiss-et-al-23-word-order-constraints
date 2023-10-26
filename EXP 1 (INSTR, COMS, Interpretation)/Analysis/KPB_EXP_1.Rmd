@@ -58,7 +58,6 @@ summary(data)
 
 #### Empirical distribution of choices
 
-
 ```{r empirical distribution, warning = FALSE, message = FALSE, fig.width = 8}
 
 int.labels <- c("Privative Sense", "Affirmative Sense")
@@ -77,7 +76,7 @@ ggplot(summary, aes(x = ADVERBIAL_TYPE, y = count, fill = ANSWER)) +
   labs(x = "Adverbial Type", y = "Frequency of Choice") + 
   facet_wrap(~SENSE, labeller = labeller(SENSE = int.labels)) +
   scale_fill_manual(name = "Choice", values = c("grey40", "grey80"),
-                    labels = c("OBJ > PP", "PP > OBJ")) +
+                    labels = c("OBJ < PP", "PP < OBJ")) +
   theme_bw()
 
 ggsave("../Figures/emp_dist_exp_1.pdf")
@@ -89,7 +88,27 @@ summary.wide <-
 summary.wide
 
 ```
+#### Alternative requested by reviewer
 
+```{r alternative empirical distribution, warning = FALSE, message = FALSE, fig.width = 8}
+
+adv.labels <- c("COM(S)", "INSTR")
+names(adv.labels) <- c("COM(S)", "INSTR")
+
+summary$SENSE <- relevel(summary$SENSE, ref = "affirmative") ## have to switch back
+
+ggplot(summary, aes(x = SENSE, y = count, fill = ANSWER)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Interpretation", y = "Frequency of Choice") + 
+  facet_wrap(~ADVERBIAL_TYPE, labeller = labeller(ADVERBIAL_TYPE = adv.labels)) +
+  scale_fill_manual(name = "Choice", values = c("grey40", "grey80"),
+                    labels = c("OBJ < PP", "PP < OBJ")) +
+  theme_bw()
+
+ggsave("../Figures/emp_dist_exp_1_alt.pdf")
+
+
+```
 The graphical representation of the empirical distribution of choices suggests an interaction between the main effects, as is witnessed by the inversion of the distribution of `COM(S)` under `affirmative sense`. 
 
 #### Random Slope Model with interaction
@@ -183,13 +202,15 @@ ranef.df <- data.frame(ranef(model)$subjects)
 ranef.df$participants <- rownames(ranef.df)
 colnames(ranef.df)[1:4] <- c("INSTR_aff", "COMS_aff", "INSTR_priv", "COMS_priv")
 
-ranef.df <- ranef.df %>%
-  mutate(INSTR_aff = INSTR_aff + model@beta[1]) %>%
-  mutate(COMS_aff = COMS_aff + model@beta[2]) %>%
-  mutate(INSTR_priv = INSTR_priv + model@beta[3]) %>%
-  mutate(COMS_priv = COMS_priv + model@beta[4]) %>%
-  arrange(COMS_aff)
+# ranef.df <- ranef.df %>%
+#  mutate(INSTR_aff = INSTR_aff + model@beta[1]) %>%
+#  mutate(COMS_aff = COMS_aff + model@beta[2]) %>%
+#  mutate(INSTR_priv = INSTR_priv + model@beta[3]) %>%
+#  mutate(COMS_priv = COMS_priv + model@beta[4]) %>%
+#  arrange(COMS_aff)
 
+ranef.df <- ranef.df %>%
+  arrange(COMS_aff)
 
 ```
 

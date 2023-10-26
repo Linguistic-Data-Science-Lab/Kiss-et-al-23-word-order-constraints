@@ -1,0 +1,13 @@
+itemId	ANSWER	count	structural_condition_str	agent_first_str	anim_first_str	NP_first_str
+t01_1_2	PP>OBJ	22				1
+t01_1_2	OBJ>PP	11		1	1	
+t02_1_2	PP>OBJ	22				1
+t02_1_2	OBJ>PP	11		1	1	
+t03_1_2	PP>OBJ	20				1
+t03_1_2	OBJ>PP	13		1	1	
+t04_1_2	PP>OBJ	25				1
+t04_1_2	OBJ>PP	8		1	1	
+t05_1_2	PP>OBJ	19				1
+t05_1_2	OBJ>PP	14		1	1	
+t06_1_2	PP>OBJ	25				1
+t06_1_2	OBJ>PP	8		1	1	

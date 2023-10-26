@@ -53,7 +53,7 @@ data.sum <- data %>%
   group_by(items, TYPE, OPTION_0_ITEM, OPTION_1_ITEM) %>%
   summarize(count = n())
 
-colnames(data.sum)[1:4] <- c("Test Item Pair", "Adverbial Type", "PP > OBJ", "OBJ > PP")
+colnames(data.sum)[1:4] <- c("Test Item Pair", "Adverbial Type", "PP < OBJ", "OBJ < PP")
 
 kbl(data.sum[,1:4]) %>% kable_styling()
 
@@ -82,7 +82,7 @@ ggplot(summary, aes(x = TYPE, y = count, fill = ANSWER)) +
   geom_bar(stat = "identity", position = "dodge") + 
   labs(x = "Adverbial Type", y = "Frequency of Choice") +
   scale_fill_manual(name = "Choice", values = c("OBJ>PP" = "grey40","PP>OBJ" = "grey80"),
-                    labels = c("OBJ > PP", "PP > OBJ")) + 
+                    labels = c("OBJ < PP", "PP < OBJ")) + 
   facet_wrap(~OBJform, labeller = labeller(OBJform = form.labels))
 
 ```

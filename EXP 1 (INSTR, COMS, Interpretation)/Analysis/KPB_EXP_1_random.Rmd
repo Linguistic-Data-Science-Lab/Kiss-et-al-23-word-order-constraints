@@ -1,0 +1,185 @@
+---
+title: "KPB_EXP_1_random"
+output: html_document
+date: "17.05.2023"
+---
+
+## Random correlation structures in Experiment 1 of Kiss et al. (2023)
+
+This document focuses on correlation structures between random effects in Kiss et al. (2023). 
+
+**Preliminaries:** I am using a model with a random structure that determines random structures for each individual condition, which, in the present case, means for each of the four possible combinations of the two factors: $(0 + factor_{1} * factor_{2} | random)$. Most random slope models make use of a random structure in which random effects are calculated like predictions for fixed factors, i.e. by linear addition: $(1 + factor_{1} * factor_{2} | random)$. 
+
+I have, however, added a model of the second type to show that the calculations can also be carried out on the basis of such model. While in the first type of model, we simply compare random factors for each column, e.g. instrumentals/affirmative with comitatives/affirmative, in the second model, the random effect for a slope must be determined by adding the value for the intercept and the value for the respective slope.  
+
+#### Libraries
+
+```{r libraries, warning=FALSE, message=FALSE}
+
+library(lme4)
+library(tidyverse)
+
+show(version)
+```
+
+#### Read in data set
+
+We'll use more perspicuous names to address `subjects` and `items`.
+
+```{r data set, echo = FALSE}
+
+data <-
+  read.csv("../Data/ForcedChoice_test.csv", fileEncoding = "UTF-8") %>%
+  mutate(ANSWER = factor(ANSWER),
+         SENSE = factor(ifelse(INTEGRATION == "yes", "affirmative", "privative")),
+         ADVERBIAL_TYPE = factor(ADVERBIAL_TYPE),
+         subjects = factor(workerId),
+         items = factor(ENCODING))
+
+```
+
+#### Empirical distribution of choices
+
+```{r empirical distribution, warning = FALSE, message = FALSE, echo = FALSE}
+
+int.labels <- c("Privative Sense", "Affirmative Sense")
+names(int.labels) <- c("privative", "affirmative")
+
+summary <- 
+  data %>%
+  group_by(ADVERBIAL_TYPE, SENSE, ANSWER) %>%
+  summarise(count = n()) %>%
+  as.data.frame()
+
+summary$SENSE <- relevel(summary$SENSE, ref = "privative")
+
+ggplot(summary, aes(x = ADVERBIAL_TYPE, y = count, fill = ANSWER)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Adverbial Type", y = "Frequency of Choice") + 
+  facet_wrap(~SENSE, labeller = labeller(SENSE = int.labels)) +
+  scale_fill_manual(name = "Choice", values = c("pink", "seashell"),
+                    labels = c("OBJ > PP", "PP > OBJ")) +
+  theme_bw()
+
+summary.wide <-
+  summary %>%
+  spread(key = ANSWER, value = count)
+
+summary.wide
+
+```
+
+#### Random Slope Model with interaction
+
+To provide the analyses used in Kiss et al. (2023), we have to relevel `SENSE` and `ADVERBIAL_TYPE`.
+
+```{r relevelling}
+
+data$SENSE <-
+  relevel(data$SENSE, ref = "affirmative")
+data$ADVERBIAL_TYPE <-
+  relevel(data$ADVERBIAL_TYPE, ref = "INSTR")
+
+```
+
+An initial analysis of both models yield possibly spurious convergence problems. In the first model, we can overcome the convergence problem by restarting, in the second model, a different optimizer is required. 
+
+
+```{r model with randoms on 0, cache = TRUE}
+
+model_0 <-
+  glmer(formula = ANSWER ~ ADVERBIAL_TYPE * SENSE + 
+          (0 + ADVERBIAL_TYPE + SENSE + ADVERBIAL_TYPE:SENSE  | subjects) + (1 | items), 
+        data = data, family = binomial())
+
+start <-
+  getME(model_0, c("theta", "fixef"))
+
+model_0 <- 
+  update(model_0, start = start,
+         control=glmerControl(optCtrl=list(maxfun=2e4)))
+
+print(summary(model_0), corr = FALSE)
+
+```
+
+```{r model with randoms on 1}
+
+model_1 <-
+  glmer(formula = ANSWER ~ ADVERBIAL_TYPE * SENSE +
+          (1 + ADVERBIAL_TYPE + SENSE + ADVERBIAL_TYPE:SENSE  | subjects) + (1 | items), 
+        data = data, family = binomial(),
+        control=glmerControl(optimizer = "nloptwrap",
+                             optCtrl = list(algorithm = "NLOPT_LN_NELDERMEAD")))
+
+print(summary(model_1), corr = FALSE)
+
+```
+
+### Random correlations
+
+In the following, we plot correlations between the conditions, based on random effects. 
+
+```{r random correlations for model w/o intercept}
+
+ranef_0.df <- data.frame(round(ranef(model_0)$subjects, 2)) %>%
+  mutate(participants = rownames(.))
+
+colnames(ranef_0.df)[1:4] <- c("INSTR_aff", "COMS_aff", "INSTR_priv", "COMS_priv")
+
+ranef_0.df <- ranef_0.df %>%
+  mutate(b_INSTR_aff = INSTR_aff + model_0@beta[1],
+         b_COMS_aff = COMS_aff + model_0@beta[2]) %>%
+  as.data.frame()
+
+ranef_0.df
+
+ranef_1.df <- data.frame(round(ranef(model_1)$subjects, 2)) %>%
+  mutate(participants = rownames(.))
+
+colnames(ranef_1.df)[1:4] <- c("INSTR_aff", "COMS_aff", "INSTR_priv", "COMS_priv")
+
+ranef_1.df <- ranef_1.df %>%
+  mutate(COMS_aff_var1 = INSTR_aff + COMS_aff) %>%
+  as.data.frame()
+
+ranef_1.df
+
+```
+
+The following plot is the one already shown in the paper, with the modification that we only plot the random effects, not the random effects added to the fixed effects. 
+
+```{r correlations affirmative senses}
+
+cor_vals <- data.frame(VarCorr(model_0)) 
+
+ggplot(ranef_0.df, aes(y = INSTR_aff, x = COMS_aff)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(y = "PP > OBJ given INSTR (fixed: -1.26)", 
+       x = "PP > OBJ given COM(S) (fixed: 2.06)", 
+       subtitle = "Correlation of random slopes for ADVERBIAL_TYPE in affirmative interpretations",
+       caption = paste("Model correlation is ", round(cor_vals$sdcor[5], 2), 
+                       ", empirical correlation is", 
+                       round(cor(ranef_0.df$COMS_aff, ranef_1.df$INSTR_aff), 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+
+```
+
+The following plot is to show how the two different models yield the same correlation structure (although the models show different correlations). 
+
+```{r}
+
+ggplot(ranef_1.df, aes(y = INSTR_aff, x = COMS_aff_var1)) +
+  geom_point(aes(color = participants), show.legend = FALSE) +
+  labs(y = "PP > OBJ given INSTR, (fixed: -1.26)", 
+       x = "PP > OBJ given COM(S), (fixed: 2.06)", 
+       subtitle = "Correlation of random slopes for ADVERBIAL_TYPE in affirmative interpretations",
+       caption = paste("Correlation is ", round(cor_vals$sdcor[5], 2))) +
+  theme_bw() +
+  theme(plot.caption = element_text(face = "bold", size = 10),
+        plot.subtitle = element_text(face = "bold", size = 10))
+
+```
+
