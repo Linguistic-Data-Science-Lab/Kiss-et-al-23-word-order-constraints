@@ -99,6 +99,7 @@ model_0 <-
   update(model_0, start = start,
          control=glmerControl(optCtrl=list(maxfun=2e4)))
 
+options(width = 300)
 print(summary(model_0), corr = FALSE)
 
 ```
@@ -155,8 +156,8 @@ cor_vals <- data.frame(VarCorr(model_0))
 
 ggplot(ranef_0.df, aes(y = INSTR_aff, x = COMS_aff)) +
   geom_point(aes(color = participants), show.legend = FALSE) +
-  labs(y = "PP > OBJ given INSTR (fixed: -1.26)", 
-       x = "PP > OBJ given COM(S) (fixed: 2.06)", 
+  labs(y = "PP < OBJ given INSTR (fixed: -1.26)", 
+       x = "PP < OBJ given COM(S) (fixed: 2.06)", 
        subtitle = "Correlation of random slopes for ADVERBIAL_TYPE in affirmative interpretations",
        caption = paste("Model correlation is ", round(cor_vals$sdcor[5], 2), 
                        ", empirical correlation is", 
@@ -173,13 +174,15 @@ The following plot is to show how the two different models yield the same correl
 
 ggplot(ranef_1.df, aes(y = INSTR_aff, x = COMS_aff_var1)) +
   geom_point(aes(color = participants), show.legend = FALSE) +
-  labs(y = "PP > OBJ given INSTR, (fixed: -1.26)", 
-       x = "PP > OBJ given COM(S), (fixed: 2.06)", 
+  labs(y = "PP < OBJ given INSTR, (fixed: -1.26)", 
+       x = "PP < OBJ given COM(S), (fixed: 2.06)", 
        subtitle = "Correlation of random slopes for ADVERBIAL_TYPE in affirmative interpretations",
        caption = paste("Correlation is ", round(cor_vals$sdcor[5], 2))) +
   theme_bw() +
   theme(plot.caption = element_text(face = "bold", size = 10),
         plot.subtitle = element_text(face = "bold", size = 10))
 
+ggsave("/Users/tibor/Documents/GitHub/LDS_WS2324/Figures/cor_plot_random_slopes.pdf")
 ```
+
 

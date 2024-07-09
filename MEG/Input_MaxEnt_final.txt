@@ -1,0 +1,44 @@
+			*Downward	Agent	Anim	NP
+			DOWN	AGENT	ANIM	NP
+COM_S_aff	SOP	11		1	1	
+	SPO	22				1
+	PSO	0				2
+	POS	0	1	1	1	2
+	OPS	0	1	2	2	1
+	OSP	0	1	2	2	
+COM_S_priv	SOP	19			1	
+	SPO	14				1
+	PSO	0				2
+	POS	0	1	1	1	2
+	OPS	0	1	1	2	1
+	OSP	0	1	1	2	
+INSTR_aff	SOP	26				
+	SPO	7				1
+	PSO	0		1	1	2
+	POS	0	1	1	2	2
+	OPS	0	1	2	2	1
+	OSP	0	1	1	1	
+INSTR_priv	SOP	19				
+	SPO	14				1
+	PSO	0			1	2
+	POS	0	1		2	2
+	OPS	0	1	1	2	2
+	OSP	0	1		1	
+COM_O_wh	SOP	21				
+	SPO	10				1
+	PSO	0		1	1	2
+	POS	0	1	2	2	2
+	OPS	0	1	2	2	1
+	OSP	0	1	1	1	
+COM_O_ind	SOP	25				
+	SPO	6				1
+	PSO	0		1	1	2
+	POS	0		2	2	2
+	OPS	0		2	2	1
+	OSP	0		1	1	
+INSTR_indef	SOP	17				
+	SPO	14				1
+	PSO	0		1	1	2
+	POS	0		2	2	2
+	OPS	0		2	2	1
+	OSP	0		1	1	
